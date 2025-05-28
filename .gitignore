@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+oauth-url-for-you.sh
+exchange-token.sh
+get-access-token.sh
