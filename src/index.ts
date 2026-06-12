@@ -242,19 +242,19 @@ async function createBondoraMcpServer() {
 
   // Register all tools
   toolDefinitions.forEach(({ name, schema, handler }) => {
-    server.tool(name, schema, async (args) => {
+    server.tool(name, schema as any, async (args: any) => {
       try {
         const result = await handler(args);
         return {
           content: [{
-            type: "text",
+            type: "text" as const,
             text: JSON.stringify(result, null, 2),
           }],
         };
       } catch (error: any) {
         return {
           content: [{
-            type: "text",
+            type: "text" as const,
             text: `Error: ${error.message}`,
           }],
         };
