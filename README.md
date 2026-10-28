@@ -74,6 +74,10 @@ Nach der Installation und Konfiguration kannst du in Claude fragen wie:
 
 ## Sicherheit
 
+`npm test` baut den Server und prüft alle zehn Tools über stdio. Ein Mock-Adapter
+fängt alle HTTP-Aufrufe ab; Tests führen keine echten Gebote, Käufe oder Verkäufe
+aus. GitHub CI prüft Tests und Dependency-Audit unter Node.js 20 und 24.
+
 - Teile niemals deine API-Zugangsdaten
 - Access Token läuft ab - implementiere Token-Refresh bei Bedarf
 - Beachte Bondoras API Rate Limits
