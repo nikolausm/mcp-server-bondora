@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 import readline from 'readline';
-import { exec } from 'child_process';
+import { execFile } from 'node:child_process';
 import axios from 'axios';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 // OAuth configuration
 const OAUTH_BASE_URL = 'https://www.bondora.com/oauth/authorize';
@@ -35,7 +35,14 @@ async function performOAuthFlow() {
   const redirectUri = await question('Gib deine Redirect URI ein (default: https://localhost:3000/callback): ') || 'https://localhost:3000/callback';
 
   // Step 2: Generate authorization URL
-  const authUrl = `${OAUTH_BASE_URL}?client_id=${clientId}&scope=${SCOPES.join('%20')}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}`;
+  const authorization = new URL(OAUTH_BASE_URL);
+  authorization.search = new URLSearchParams({
+    client_id: clientId,
+    scope: SCOPES.join(' '),
+    response_type: 'code',
+    redirect_uri: redirectUri,
+  }).toString();
+  const authUrl = authorization.href;
 
   console.log('\nÖffne die Authorization URL in deinem Browser...');
   console.log('Falls sie nicht automatisch öffnet, besuche:');
@@ -43,13 +50,9 @@ async function performOAuthFlow() {
 
   // Try to open browser
   try {
-    const platform = process.platform;    if (platform === 'darwin') {
-      await execAsync(`open "${authUrl}"`);
-    } else if (platform === 'win32') {
-      await execAsync(`start "${authUrl}"`);
-    } else {
-      await execAsync(`xdg-open "${authUrl}"`);
-    }
+    const opener = process.platform === 'darwin' ? 'open'
+      : process.platform === 'win32' ? 'explorer.exe' : 'xdg-open';
+    await execFileAsync(opener, [authUrl]);
   } catch (error) {
     console.log('Konnte Browser nicht automatisch öffnen.');
   }
